@@ -1,11 +1,8 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use threads;
-use Test::More 'no_plan';
 
-BEGIN { use_ok('IO::BindHandles') };
-
+use IO::BindHandles;
 use IO::Handle;
 use IO::Socket::UNIX;
 use File::Temp qw(:POSIX );
@@ -15,7 +12,8 @@ use File::Temp qw(:POSIX );
 # the handles.
 
 my $socket_name = tmpnam();
-my $server_th = async {
+my $server_pid = fork();
+if ($server_pid == 0) {
     # this is our server that will keep buffer for a while...
     my $sock = IO::Socket::UNIX->new( Local => $socket_name, Listen => 1 ) or die $!;
     my $sock_c = $sock->accept();
@@ -35,6 +33,7 @@ my $server_th = async {
     #warn "[SERVER] after loop.\n";
     $sock_c->print($_."\n") for @buffer;
     #warn "[SERVER] after print.\n";
+    exit 0;
 }
 
 # The STDIN/STDOUT pipes for our client...
@@ -46,7 +45,10 @@ $cli_stdin_w->autoflush(1);
 $cli_stdout_r->autoflush(1);
 $cli_stdout_w->autoflush(1);
 
-my $client_th = async {
+my $client_pid = fork();
+if ($client_pid == 0) {
+    require Test::More;
+    Test::More->import(tests => 12);
     $cli_stdin_r->close;
     $cli_stdout_w->close;
     # this is our client...
@@ -67,6 +69,7 @@ my $client_th = async {
     }
     #warn "[CLIENT] read it all.\n";
     is($ret[$_], uc($text[$_])) for 0..$#text;
+    exit;
 };
 
 $cli_stdin_w->close;
@@ -84,17 +87,16 @@ my $bh = IO::BindHandles->new
                 $sock, $cli_stdout_w, # read from socket, write to cli stdout
                ]
   );
-pass('succesfully initializes the bindhandles');
 
 while ($bh->bound()) {
     $bh->rwcycle();
 }
 
-pass('loop ended...');
 
 $cli_stdin_r->close();
 $cli_stdout_w->close();
 $sock->close();
 
-$server_th->join;
-$client_th->join;
+waitpid $server_pid, 0;
+waitpid $client_pid, 0;
+exit 0;

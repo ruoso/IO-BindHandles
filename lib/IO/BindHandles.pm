@@ -6,7 +6,6 @@ use warnings;
 use IO::Handle;
 use IO::Select;
 
-
 sub new {
     my $class = shift;
     $class = ref $class || $class;
@@ -198,11 +197,11 @@ Simple usage:
       $r2, $w2, # read from $r2, write to $r2
     ]
   );
-
-More complex scenario with non-blocking calls
-
+  
   # block until the handles close themselves
   $bh->loop;
+
+More complex scenario with non-blocking calls
 
   # connect STDIN and STDOUT to a socket in non-blocking way
   $socket->blocking(0);
@@ -229,7 +228,7 @@ More complex scenario with non-blocking calls
 
 This module implements a buffered tunneling between a set of arbitrary
 IO handles. It basically implements a select loop on a set of handles,
-reading and writing from them using a internal buffer.
+reading and writing from them using an internal buffer.
 
 This replicates what a dup or fdopen call would do when you can't
 actually do it, i.e.: attach STDIN/STDOUT to a socket or attach two

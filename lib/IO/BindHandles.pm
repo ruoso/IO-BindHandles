@@ -177,14 +177,6 @@ sub timeout {
 __END__
 =pod
 
-=head1 NAME
-
-IO::BindHandles - Bind a set of handles for buffered tunneling
-
-=head1 VERSION
-
-version 0.002
-
 =head1 SYNOPSIS
 
 Simple usage:
@@ -237,9 +229,7 @@ different sockets toguether.
 This module doesn't perform any low-level operation on the handles, so
 it should support any IO::Handle that is supported by IO::Select.
 
-=head1 METHODS
-
-=head2 new(timeout => $val, handles => [ $h1, $h2 ])
+=method new(timeout => $val, handles => [ $h1, $h2 ])
 
 Initializes a new BindHandles instance. The timeout value defaults to
 0.5. The handles argument receives an arrayref with pairs of handles.
@@ -255,7 +245,7 @@ you think this features are important and I might even implement it.
 
 This method will call autoflush(1) on all handles.
 
-=head2 loop()
+=method loop()
 
 Blocking loop to consume all read handles and write the data to their
 bound handles until they are no longer bound, i.e.: when the remote
@@ -264,7 +254,7 @@ socket is closed.
 In order to avoid consuming all the CPU, this method will override the
 timeout configuration to 0.1 if it is set to 0.
 
-=head2 bound()
+=method bound()
 
 Checks if there are still bound handles. It will return false when no
 more write handles are open or when read handles close without any
@@ -272,7 +262,7 @@ write buffer left. This can be used as a "while" condition.
 
 It returns the number of valid bindings.
 
-=head2 rwcycle()
+=method rwcycle()
 
 Selects handles ready to read, write or with exceptions and act
 accordingly. The select might block according to the configured
@@ -301,7 +291,7 @@ handle and there are contents in the write buffer.
 
 =back
 
-=head2 timeout
+=method timeout
 
 Accessor for the timeout value.
 
@@ -309,16 +299,4 @@ Accessor for the timeout value.
 
 Please submit all bugs regarding IO::BindHandles to bug-io-bindhandles@rt.cpan.org
 
-=head1 AUTHOR
-
-Daniel Ruoso <daniel@ruoso.com>
-
-=head1 COPYRIGHT AND LICENSE
-
-This software is copyright (c) 2011 by Daniel Ruoso.
-
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
-
-=cut
 

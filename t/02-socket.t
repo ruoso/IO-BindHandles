@@ -5,18 +5,25 @@ use warnings;
 use IO::BindHandles;
 use IO::Handle;
 use IO::Socket::UNIX;
-use File::Temp qw(:POSIX );
 
 # in this test we'll build a server that echoes uppercase output, a
 # client that posts a set of lines and a proxy that should bind all
 # the handles.
 
-my $socket_name = tmpnam();
+my $socket_name;
+BEGIN {
+    $socket_name = 't/02-socket.sock';
+    unlink $socket_name;
+}
+END {
+    unlink $socket_name;
+}
+
 my $server_pid = fork();
 if ($server_pid == 0) {
     # this is our server that will keep buffer for a while...
     my $sock = IO::Socket::UNIX->new( Local => $socket_name, Listen => 1 ) or die $!;
-    my $sock_c = $sock->accept();
+    my $sock_c = $sock->accept() or die $!;
     my @buffer;
     my $count = 0;
     #warn "[SERVER] before loop.\n";
@@ -34,6 +41,8 @@ if ($server_pid == 0) {
     $sock_c->print($_."\n") for @buffer;
     #warn "[SERVER] after print.\n";
     exit 0;
+} elsif (not defined $server_pid) {
+    die 'Failed to fork server side.';
 }
 
 # The STDIN/STDOUT pipes for our client...
@@ -70,6 +79,8 @@ if ($client_pid == 0) {
     #warn "[CLIENT] read it all.\n";
     is($ret[$_], uc($text[$_])) for 0..$#text;
     exit;
+} elsif (not defined $client_pid) {
+    die 'Failed to fork client side.';
 };
 
 $cli_stdin_w->close;

@@ -1,4 +1,12 @@
 
+cpan/0.004
+   1462b13 2011-06-02 Daniel Ruoso 
+           change tests so that we get more info from reports
+   b447605 2011-05-28 Daniel Ruoso 
+           use ReadmeFromPod
+   194eea8 2011-05-28 Daniel Ruoso 
+           adding changelog
+
 cpan/0.003
    09770a1 2011-05-28 Daniel Ruoso 
            Version bumb to 0.003

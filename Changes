@@ -1,5 +1,7 @@
 
 cpan/0.004
+   4a19c69 2011-06-02 Daniel Ruoso 
+           bump version
    1462b13 2011-06-02 Daniel Ruoso 
            change tests so that we get more info from reports
    b447605 2011-05-28 Daniel Ruoso 

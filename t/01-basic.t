@@ -1,7 +1,5 @@
 #!/usr/bin/perl
-use Test::More 'no_plan';
 
-BEGIN { use_ok('IO::BindHandles') };
 
 # we're going to do a very basic test, we're openning two sets of
 # pipes. We will bind one set to the other, try writing in one side to
@@ -23,7 +21,6 @@ my $bh = IO::BindHandles->new(
                                           $r1, $w2, # read from r1, write to w2
                                          ]
                              );
-pass('succesfully initializes the bindhandles');
 
 # now, if we write to w1 we should see the results in r2
 my $pid = fork();
@@ -37,6 +34,9 @@ if (!$pid) {
 } else {
     close $r1;
     close $w2;
+
+    require Test::More;
+    Test::More->import(tests => 4);
 
     pass("Will start to write on w1");
     print {$w1} "Test\n";

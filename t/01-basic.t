@@ -4,6 +4,7 @@
 # we're going to do a very basic test, we're openning two sets of
 # pipes. We will bind one set to the other, try writing in one side to
 # read in the other and vice-versa.
+use IO::BindHandles;
 use IO::Handle;
 
 my ($r1, $w1, $r2, $w2) = map { IO::Handle->new() } 1..4;
@@ -39,10 +40,10 @@ if (!$pid) {
     Test::More->import(tests => 4);
 
     pass("Will start to write on w1");
-    print {$w1} "Test\n";
+    $w1->print("Test\n");
 
     pass("Will read from r2");
-    is(<$r2>, "Test\n", "got the output in the third pipe");
+    is($r2->getline(), "Test\n", "got the output in the third pipe");
 
     pass("Will close all");
     close $r2;
